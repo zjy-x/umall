@@ -1,52 +1,44 @@
 <template>
   <div>
-    <el-button type="primary" @click="add()">添加</el-button>
-
     <!-- list -->
-    <v-list :list="list" @init="init" @edit="edit($event)"></v-list>
+    <v-list @edit="edit" :list="list"></v-list>
 
     <!-- form -->
-    <v-form :info="info" :list="list" @init="init" ref="form"></v-form>
+    <v-form :info="info" ref="form" @init="init"></v-form>
   </div>
 </template>
 
 <script>
 import vList from "./components/list.vue";
 import vForm from "./components/form.vue";
-import { reqMenuList } from "../../utils/http";
+import { reqvipList } from "../../utils/http";
 
 export default {
   data() {
     return {
       info: {
-        isShow: false,
-        title:"添加菜单"
+        isshow: false
       },
       list: []
     };
   },
   methods: {
-    add() {
-      this.info.isShow = true;
+    edit(uid) {
+      this.info.isshow = true;
+      this.$refs.form.getOne(uid);
     },
     init() {
-      reqMenuList().then(res => {
+      reqvipList().then(res => {
         this.list = res.data.list;
       });
-    },
-    edit(id) {
-      this.info.isShow = true;
-      this.info.title = "编辑菜单";
-      this.$refs.form.getOne(id);
     }
   },
   components: {
     vList,
     vForm
   },
-  //进来请求数据库数据渲染到 list 和form
   mounted() {
-    this.init();
+    this.init()
   }
 };
 </script>

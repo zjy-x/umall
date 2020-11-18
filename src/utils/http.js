@@ -410,3 +410,48 @@ export const reqgoodsCount = () => {
         method: "get",
     })
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =====================菜单管理======================
+//获取一条
+export const reqvipDetail = (uid) =>{
+    return axios({
+        url:baseUrl+"/api/memberinfo",
+        method:'get',
+        params:{
+            uid:uid
+        }
+    })
+}
+
+// 查询列表
+export const reqvipList=()=>{
+    return axios({
+        url:baseUrl+"/api/memberlist",
+        method:"get"
+    })
+}
+
+
+//修改
+export const reqvipUpdate=(form)=>{
+    return axios({
+        url:baseUrl+"/api/memberedit",
+        method:"post",
+        data:qs.stringify(form)
+    })
+}
+
+
