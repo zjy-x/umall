@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="info.title" :visible.sync="info.isShow" @closed="closed">
+    <el-dialog :title="info.title" :visible.sync="info.isShow" @closed="closed" @opened="opened">
       <el-form :model="user">
         <el-form-item label="一级分类" label-width="120px">
           <el-select v-model="user.first_cateid" placeholder="请选择" @change="changeFirst">
@@ -32,30 +32,35 @@
         </el-form-item>
 
         <el-form-item label="商品规格" label-width="120px">
-          <el-select v-model="user.specsattr" placeholder="请选择">
-            <el-option label="顶级分类" value="1"></el-option>
+          <el-select v-model="user.specsid" placeholder="请选择" @change="changeFirst2">
+            <el-option v-for="item in spList" :key="item.id" :label="item.specsname" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="规格属性" label-width="120px">
-          <el-select v-model="user.specsid" placeholder="请选择" multiple="">
-            <el-option label="顶级分类" value="1"></el-option>
+          <el-select v-model="user.specsattr" placeholder="请选择" multiple="">
+            <el-option v-for="item in specsArr" :key="item" :label="item" :value="item"></el-option>
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="是否新品" label-width="100px">
+
+        <el-form-item label="是否新品" label-width="100px">
           <el-radio v-model="user.isnew" :label="1">是</el-radio>
           <el-radio v-model="user.isnew" :label="2">否</el-radio>
-        </el-form-item> -->
+        </el-form-item>
+
+        <el-form-item label="是否热卖" label-width="100px">
+          <el-radio v-model="user.ishot" :label="1">是</el-radio>
+          <el-radio v-model="user.ishot" :label="2">否</el-radio>
+        </el-form-item>
 
         <el-form-item label="状态" label-width="120px">
           <el-switch v-model="user.status" :active-value="1" :inactive-value="2"></el-switch>
         </el-form-item>
 
         <el-form-item label="商品描述" label-width="100px">
-          <textarea  v-model="user.description" name="" id="" cols="30" rows="10"></textarea>
+          <!-- <textarea  v-model="user.description" name="" id="" cols="30" rows="10"></textarea> -->
+          <div v-if="info.isShow" id="edit"></div>
         </el-form-item>
-
-        {{cateList}}
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -68,11 +73,13 @@
 </template>
 
 <script>
+import E from 'wangeditor'
 import { successAlert } from "../../../utils/alert";
 import {
   reqcateList,
-  reqspecsDetail,
-  reqspecsUpdate,
+  reqgoodsAdd,
+  reqgoodsDetail,
+  reqgoodsUpdate
 } from "../../../utils/http";
 import { mapActions, mapGetters } from "vuex";
 
@@ -81,7 +88,7 @@ export default {
   computed: {
     ...mapGetters({
       cateList: "cate/list",
-
+      spList:"specs/list",
     })
   },
 
@@ -93,22 +100,27 @@ export default {
         goodsname: "",
         price: "",
         market_price: "",
-        img: "",
+        img: null,
         description: "",
         specsid: "",
-        specsattr: "",
+        specsattr: [],
         isnew: "",
+        ishot:"",
         status: 1
       },
+      //二级分类
       second_List:[],
+      //商品规格
+      specsArr:[],
       imgUrl:''
     };
   },
   methods: {
     ...mapActions({
-      reqList: "specs/reqList",
-      reqCount: "specs/reqCount",
-      reqCateList: "cate/reqList",
+      reqCateList: "cate/reqList",//一级
+      specsList:"specs/reqList",//商品规格列表
+      reqgoodsList: "goods/reqList",//请求goodslist，刷新页面
+      reqgoodsCount:"goods/reqCount",//总数
     }),
     clear() {
       this.info.isShow = false;
@@ -116,43 +128,19 @@ export default {
     //清空工作
     empty() {
       this.user = {
-        specsname: "",
-        attrs: "",
+        first_cateid: "",
+        second_cateid: "",
+        goodsname: "",
+        price: "",
+        market_price: "",
+        img: null,
+        description: "",
+        specsid: "",
+        specsattr: [],
+        isnew: "",
+        ishot:"",
         status: 1
-      },
-      this.attr = [{ value: "" }];
-    },
-    add() {
-      
-      console.log(this.user);
-      // this.user.attrs = JSON.stringify(this.attr.map(item => item.value));
-      // reqspecsAdd(this.user).then(res => {
-      //   if (res.data.code == 200) {
-      //     successAlert("添加成功");
-      //     this.empty();
-      //     this.clear();
-      //     this.reqList();
-      //     this.reqCount();
-      //   }
-      // });
-    },
-    getOne(id) {
-      reqspecsDetail(id).then(res => {
-        this.user = res.data.list[0];
-         
-        this.attr = JSON.parse(this.user.attrs).map(item => ({ value: item }));
-      });
-    },
-    update() {
-      this.user.attrs = JSON.stringify(this.attr.map(item => item.value));
-      reqspecsUpdate(this.user).then(res => {
-        if (res.data.code == 200) {
-          successAlert("添加成功");
-          this.clear();
-          this.empty();
-          this.reqList();
-        }
-      });
+      }
     },
     closed() {
       if (this.info.title === "编辑商品") {
@@ -167,11 +155,70 @@ export default {
     changeFirst(){
       reqcateList({pid:this.user.first_cateid}).then(res=>{
         this.second_List = res.data.list;
-      })  
+      })
+      this.user.second_cateid = '';  
+    },
+    changeFirst2(){
+      let obj = this.spList.find(item=>item.id === this.user.specsid);
+      this.specsArr = obj.attrs;
+    },
+    opened(){
+      //创建editor实例
+      this.editor = new E("#edit");
+      this.editor.create();
+      //
+      this.editor.txt.html(this.user.description);
+    },
+    add() {
+      this.user.description = this.editor.txt.html();
+      let d = { ...this.user };
+      d.specsattr = JSON.stringify(d.specsattr);
+
+      reqgoodsAdd(d).then(res => {
+        if (res.data.code == 200) {
+          successAlert("添加成功");
+          this.empty();
+          this.clear();
+          this.reqgoodsList();
+          this.reqgoodsCount();
+        }
+      });
+    },
+    getOne(id) {
+      reqgoodsDetail(id).then(res => {
+        this.user = res.data.list;
+        this.user.id = id;
+
+        this.imgUrl = this.$imgPre + this.user.img;
+        
+        reqcateList({pid:this.user.first_cateid}).then(res=>{
+          this.second_List = res.data.list;
+        })
+
+        this.user.specsattr = JSON.parse(this.user.specsattr)
+
+        if(this.editor) {
+          this.editor.txt.html(this.user.description);
+        }
+      });
+    },
+    update() {
+      // this.user.attrs = JSON.stringify(this.attr.map(item => item.value));
+      // reqspecsUpdate(this.user).then(res => {
+      //   if (res.data.code == 200) {
+      //     successAlert("添加成功");
+      //     this.clear();
+      //     this.empty();
+      //     // this.reqList();
+      //   }
+      // });
     }
   },
   mounted() {
-    this.reqCateList()
+    //一级分类
+    this.reqCateList();
+    //商品规格列表
+    this.specsList(true);
   },
 };
 </script>

@@ -1,4 +1,4 @@
-import { reqspecsList,reqspecsCount } from '../../utils/http'
+import { reqgoodsList,reqgoodsCount } from '../../utils/http'
 
 const state = {
     list: [],
@@ -20,9 +20,8 @@ const mutations = {
 }
 
 const actions = {
-    reqList(context,bool) {
-        let param = bool?{}:{page:context.state.page,size:context.state.size}
-        reqspecsList(param).then(res => {
+    reqList(context) {
+        reqgoodsList({page:context.state.page,size:context.state.size}).then(res => {
             let list = res.data.list?res.data.list:[];
 
             if(list.length ===0 &&context.state.page>1){
@@ -30,15 +29,11 @@ const actions = {
                 context.dispatch("reqList");
                 return;
             }
-
-            list.forEach(item => {
-                item.attrs = JSON.parse(item.attrs)
-            });
             context.commit("changeList",list);
         });
     },
     reqCount(context){
-        reqspecsCount().then(res=>{
+        reqgoodsCount().then(res=>{
             context.commit("changeCount",res.data.list[0].total);
         });
     },

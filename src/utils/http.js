@@ -6,6 +6,8 @@ import store from '../store'
 import router from '../router'
 
 let baseUrl = '/aa';
+import Vue from 'vue'
+Vue.prototype.$imgPre="http://localhost:3000"
 
 // 请求拦截
 axios.interceptors.request.use(req=>{
@@ -211,7 +213,7 @@ export const reqLogin = (user) => {
 
 
 
-// =====================商品分类管理======================
+// =====================商品分类======================
 
 
 //添加
@@ -275,7 +277,7 @@ export const reqcateDel=(id)=>{
 
 
 
-// =====================商品规格管理======================
+// =====================商品规格======================
 
 // 添加
 export const reqspecsAdd = (user) => {
@@ -341,7 +343,7 @@ export const reqspecsCount = () => {
 
 
 
-// =====================商品规格管理======================
+// =====================商品管理======================
 
 // 添加 文件
 export const reqgoodsAdd = (user) => {
@@ -413,18 +415,7 @@ export const reqgoodsCount = () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-// =====================菜单管理======================
+// =====================会员管理======================
 //获取一条
 export const reqvipDetail = (uid) =>{
     return axios({
@@ -454,4 +445,68 @@ export const reqvipUpdate=(form)=>{
     })
 }
 
+
+
+
+// =====================轮播图管理======================
+
+// 添加 文件
+export const reqbannerAdd = (user) => {
+    let d=new FormData()
+    for(let i in user){
+        d.append(i,user[i])
+    }
+    return axios({
+        url: baseUrl + "/api/banneradd  ",
+        method: "post",
+        data:d
+    })
+}
+
+
+//列表 
+export const reqbannerList = () => {
+    return axios({
+        url: baseUrl + "/api/bannerlist",
+        method: "get",
+    })
+}
+
+
+// 一条
+export const reqbannerDetail = id => {
+    return axios({
+        url: baseUrl + "/api/bannerinfo",
+        method: "get",
+        params: {
+            id: id
+        }
+    })
+}
+
+
+//删除
+export const reqbannerDel = (id) => {
+    return axios({
+        url: baseUrl + "/api/bannerdelete",
+        method: "post",
+        data: qs.stringify({
+            id: id
+        })
+    })
+}
+
+
+// 修改 文件
+export const reqbannerUpdate = (user) => {
+    let d=new FormData()
+    for(let i in user){
+        d.append(i,user[i])
+    }
+    return axios({
+        url: baseUrl + "/api/banneredit",
+        method: "post",
+        data: d
+    })
+}
 

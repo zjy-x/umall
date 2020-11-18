@@ -8,24 +8,26 @@
       :tree-props="{children: 'children'}"
     >
       <el-table-column prop="id" label="商品编号"></el-table-column>
-      <el-table-column prop="specsname" label="商品名称"></el-table-column>
-      <el-table-column label="商品价格">
-        1234
-      </el-table-column>
-      <el-table-column label="市场价格">
-        1231
-      </el-table-column>
+      <el-table-column prop="goodsname" label="商品名称"></el-table-column>
+      <el-table-column prop="price" label="商品价格"></el-table-column>
+      <el-table-column prop="market_price" label="市场价格"></el-table-column>
       <el-table-column label="图片">
         <template slot-scope="scope">
-            <el-tag v-for="item in scope.row.attrs" :key="item">{{item}}</el-tag>
+            <img class="pic" :src="$imgPre+scope.row.img" alt="">
           </template>
       </el-table-column>
       <el-table-column label="是否新品">
-        <el-button type="primary" >是</el-button>
+        <template slot-scope="scope">
+            <el-button type="primary" v-if="scope.row.isnew===1">是</el-button>
+            <el-button type="danger" v-else>否</el-button>
+          </template>
       </el-table-column>
       
       <el-table-column label="状态">
-        <el-button type="primary" >启用</el-button>
+        <template slot-scope="scope">
+            <el-button type="primary" v-if="scope.row.ishot===1">是</el-button>
+            <el-button type="danger" v-else>否</el-button>
+          </template>
       </el-table-column>
       <el-table-column label="操作" width="180px">
         <template slot-scope="scope">
@@ -44,44 +46,43 @@
 </template>
 
 <script>
-import {reqspecsDel} from '../../../utils/http'
+import {reqgoodsDel} from '../../../utils/http'
 import {successAlert} from '../../../utils/alert'
 import {mapActions,mapGetters} from "vuex"
 
 export default {
   computed:{
     ...mapGetters({
-      list:"specs/list",
-      total:"specs/total",
-      size:"specs/size",
-      page:"specs/page"
+      list:"goods/list",
+      total:"goods/total",
+      size:"goods/size",
     })
   },
   methods:{
     ...mapActions({
-      reqList:"specs/reqList",
-      reqCount:"specs/reqCount",
-      reqPage:"specs/reqPage"
+      reqgoodsList:"goods/reqList",
+      reqgoodsCount:"goods/reqCount",
+      reqgoodsPage:"goods/reqPage"
     }),
     del(id){
-      reqspecsDel(id).then(res=>{
+      reqgoodsDel(id).then(res=>{
         if(res.data.code == 200){
           successAlert("删除成功");
-          this.reqList();
-          this.reqCount();
+          this.reqgoodsList();
+          this.reqgoodsCount();
         }
       })
     },
     edit(id){
       this.$emit("edit",id)
     },
-    changePage(id){
-      this.reqPage(id)
+    changePage(page){
+      this.reqgoodsPage(page)
     }
   },
   mounted(){
-    this.reqList();
-    this.reqCount();
+    this.reqgoodsList();
+    this.reqgoodsCount();
   }
 };
 </script>
@@ -91,6 +92,5 @@ export default {
 .pic{
   width: 100px;
   height: 100px;
-  
 }
 </style>
