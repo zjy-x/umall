@@ -22,11 +22,16 @@
             <el-button type="danger" v-else>否</el-button>
           </template>
       </el-table-column>
-      
-      <el-table-column label="状态">
+      <el-table-column label="是否热卖">
         <template slot-scope="scope">
             <el-button type="primary" v-if="scope.row.ishot===1">是</el-button>
             <el-button type="danger" v-else>否</el-button>
+          </template>
+      </el-table-column>
+      <el-table-column label="状态">
+        <template slot-scope="scope">
+            <el-button type="primary" v-if="scope.row.status===1">启用</el-button>
+            <el-button type="danger" v-else>禁用</el-button>
           </template>
       </el-table-column>
       <el-table-column label="操作" width="180px">

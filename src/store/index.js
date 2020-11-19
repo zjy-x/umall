@@ -8,6 +8,7 @@ import cate from './modules/cate'
 import specs from './modules/specs'
 import banner from './modules/banner'
 import goods from './modules/goods'
+import seckill from './modules/seckill'
 
 let store = new Vuex.Store({
     state,
@@ -18,7 +19,8 @@ let store = new Vuex.Store({
         cate,
         specs,
         banner,
-        goods
+        goods,
+        seckill
     }
 })
 

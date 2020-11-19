@@ -510,3 +510,60 @@ export const reqbannerUpdate = (user) => {
     })
 }
 
+
+
+// =====================秒杀======================
+
+// 添加 文件
+export const reqseckillAdd = (user) => {
+    
+    return axios({
+        url: baseUrl + "/api/seckadd",
+        method: "post",
+        data:user
+    })
+}
+
+
+//列表 
+export const reqseckillList = () => {
+    return axios({
+        url: baseUrl + "/api/secklist",
+        method: "get",
+    })
+}
+
+
+// 一条
+export const reqseckillDetail = id => {
+    return axios({
+        url: baseUrl + "/api/seckinfo",
+        method: "get",
+        params: {
+            id: id
+        }
+    })
+}
+
+
+//删除
+export const reqseckillDel = (id) => {
+    return axios({
+        url: baseUrl + "/api/seckdelete",
+        method: "post",
+        data: qs.stringify({
+            id: id
+        })
+    })
+}
+
+
+// 修改 文件
+export const reqseckillUpdate = (user) => {
+    return axios({
+        url: baseUrl + "/api/seckedit",
+        method: "post",
+        data: user
+    })
+}
+
